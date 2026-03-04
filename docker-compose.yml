@@ -1,0 +1,20 @@
+version: "3.9"
+
+services:
+  db:
+    image: mysql:8.0.45-debian
+    container_name: mysql_db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: commerce
+      MYSQL_USER: web
+      MYSQL_PASSWORD: web
+    ports:
+      - "3308:3306" # Mapear puerto 3308 del host al puerto 3306 del contenedor
+    volumes:
+      - mysql_data:/var/lib/mysql # Persistir datos en el volumen
+      - ./init:/docker-entrypoint-initdb.d # Cargar scripts de inicialización
+
+volumes:
+  mysql_data:
