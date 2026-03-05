@@ -34,7 +34,6 @@ CREATE TABLE DetallePedido (
     id_pedido INT NOT NULL,
     id_producto INT NOT NULL,
     cantidad INT NOT NULL,
-    precio_unitario DECIMAL(10,2) NOT NULL,
     subtotal DECIMAL(12,2) NOT NULL,
 
     CONSTRAINT FK_DetallePedido_Pedidos
@@ -108,16 +107,16 @@ INSERT INTO Pedidos (id_cliente, total, estado, metodo_pago) VALUES
 ('10000010', 950000, 'PAGADO', 'TRANSFERENCIA');
 
 
-INSERT INTO DetallePedido (id_pedido, id_producto, cantidad, precio_unitario, subtotal) VALUES
-(1,1,1,85000,85000),
-(1,5,1,180000,180000),
-(1,14,1,40000,40000),
-(2,1,1,85000,85000),
-(3,3,1,750000,750000),
-(4,10,1,120000,120000),
-(5,5,1,180000,180000),
-(6,9,1,900000,900000),
-(7,8,1,35000,35000),
-(8,7,1,420000,420000),
-(9,12,1,200000,200000),
-(10,11,1,950000,950000);
+INSERT INTO DetallePedido (id_pedido, id_producto, cantidad, subtotal) VALUES
+(1,1,1,85000),
+(1,5,1,180000),
+(1,14,1,40000),
+(2,1,1,85000),
+(3,3,1,750000),
+(4,10,1,120000),
+(5,5,1,180000),
+(6,9,1,900000),
+(7,8,1,35000),
+(8,7,1,420000),
+(9,12,1,200000),
+(10,11,1,950000);
