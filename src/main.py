@@ -1,4 +1,7 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Depends
+from sqlalchemy.orm import Session
+from config.sql_alquemy_conexion import get_db
+from models.orm.cliente import Cliente
 from config.conexion_mysql import crear_conexion
 from clientes import routes as clientes_routes
 from productos import routes as productos_routes
@@ -19,3 +22,5 @@ def read_root():
     else:
         print("Error de conexión a la base de datos")
     return {"Hello": "World"}
+
+
