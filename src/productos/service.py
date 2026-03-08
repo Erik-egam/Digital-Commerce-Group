@@ -1,41 +1,47 @@
 from sqlalchemy.orm import Session
-from models.orm.producto import Producto as ProductoORM
+from sqlalchemy.exc import IntegrityError
+from models.orm.producto import Producto
 
-class ProductoService:
-    def __init__(self, db: Session):
-        self.db = db
+def listar(db: Session) -> list[Producto]:
+    return db.query(Producto).all()
 
-    def get_all(self):
-        return self.db.query(ProductoORM).all()
+def obtener(db: Session, id_producto: int) -> Producto | None:
+    return db.query(Producto).filter(Producto.id_producto == id_producto).first()
 
-    def get_by_id(self, id_producto: int):
-        return self.db.query(ProductoORM).filter(ProductoORM.id_producto == id_producto).first()
+def crear(db: Session, nombre: str, descripcion: str | None, precio: float, stock: int) -> Producto:
+    p = Producto(nombre=nombre, descripcion=descripcion, precio=precio, stock=stock)
+    db.add(p)
+    try:
+        db.commit()
+    except IntegrityError:
+        db.rollback()
+        raise ValueError("Error al crear el producto")
+    db.refresh(p)
+    return p
 
-    def create(self, datos: dict):
-        nuevo_producto = ProductoORM(
-            nombre=datos.get("nombre"),
-            descripcion=datos.get("descripcion"),
-            precio=datos.get("precio"),
-            stock=datos.get("stock")
-        )
-        self.db.add(nuevo_producto)
-        self.db.commit()
-        self.db.refresh(nuevo_producto)
-        return nuevo_producto
+def actualizar(db: Session, id_producto: int, nombre: str, descripcion: str | None, precio: float, stock: int) -> Producto:
+    p = obtener(db, id_producto)
+    if not p:
+        raise ValueError("Producto no encontrado")
+    p.nombre = nombre
+    p.descripcion = descripcion
+    p.precio = precio
+    p.stock = stock
+    try:
+        db.commit()
+    except IntegrityError:
+        db.rollback()
+        raise ValueError("Error al actualizar el producto")
+    db.refresh(p)
+    return p
 
-    def update(self, id_producto: int, datos: dict):
-        producto = self.get_by_id(id_producto)
-        if producto:
-            for key, value in datos.items():
-                setattr(producto, key, value)
-            self.db.commit()
-            self.db.refresh(producto)
-        return producto
-
-    def delete(self, id_producto: int):
-        producto = self.get_by_id(id_producto)
-        if producto:
-            self.db.delete(producto)
-            self.db.commit()
-            return True
-        return False
+def eliminar(db: Session, id_producto: int) -> None:
+    p = obtener(db, id_producto)
+    if not p:
+        raise ValueError("Producto no encontrado")
+    db.delete(p)
+    try:
+        db.commit()
+    except IntegrityError:
+        db.rollback()
+        raise ValueError("Error al eliminar el producto")
