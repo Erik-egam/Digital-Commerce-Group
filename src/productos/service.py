@@ -35,13 +35,15 @@ def actualizar(db: Session, id_producto: int, nombre: str, descripcion: str | No
     db.refresh(p)
     return p
 
-def eliminar(db: Session, id_producto: int) -> None:
-    p = obtener(db, id_producto)
-    if not p:
+def eliminar(db: Session, id_producto: int):
+    producto = db.get(Producto, id_producto)
+
+    if not producto:
         raise ValueError("Producto no encontrado")
-    db.delete(p)
+
     try:
+        db.delete(producto)
         db.commit()
     except IntegrityError:
         db.rollback()
-        raise ValueError("Error al eliminar el producto")
+        raise ValueError("No se puede eliminar el producto porque tiene relaciones")
